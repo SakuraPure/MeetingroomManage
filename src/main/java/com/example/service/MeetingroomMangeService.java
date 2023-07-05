@@ -32,7 +32,7 @@ public class MeetingroomMangeService {
         return meetingRoomsList;
     }
 
-    public boolean addRoom(String buildName,int floor,double area,int capacity){
+    public Object addRoom(String buildName,int floor,double area,int capacity){
         MeetingRooms meetingRooms=new MeetingRooms().setBuildName(buildName)
                                                     .setFloor(floor)
                                                     .setArea(area)
@@ -45,4 +45,11 @@ public class MeetingroomMangeService {
             return false;
         }
     }
+
+    public Object deleteRoom(int id){
+        int result=roomsDAO.deleteRoom(id);
+        return null;
+    }
+
+
 }
