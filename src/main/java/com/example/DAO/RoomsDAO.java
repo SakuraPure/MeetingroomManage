@@ -19,10 +19,10 @@ public interface RoomsDAO {
             "    limit #{page},#{pageSize}\n" +
             "  </when>\n" +
             "  <when test=\"id!= null\">\n" +
-            "     WHERE rooms.f_id=#{id}\n" +
+            "     WHERE f_id=#{id}\n" +
             "  </when>\n" +
             "  <when test=\"name!=null\">\n"+
-            "     WHERE rooms.building=#{name}\n"+
+            "     WHERE building=#{name}\n"+
             "  </when>\n"+
             " </choose>"+
             "</script>")
@@ -35,7 +35,7 @@ public interface RoomsDAO {
             @Result(column = "status",property = "status")
     })
     @Update("update meeting_rooms set building=#{buildName},floor=#{floor},seat_count=#{capacity},area=#{area} where f_id=#{id}")
-    int updateRoom(MeetingRooms meetingRooms);
+    int updateRoom(@Param("id")int id,MeetingRooms meetingRooms);
 
     @Results({
             @Result(column = "f_id",property = "id"),
@@ -53,5 +53,14 @@ public interface RoomsDAO {
             @Result(column = "status",property = "status")
     })
     @Delete("delete from meeting_rooms where f_id=#{id}")
-    int deleteRoom(int id);
+    int deleteRoom(@Param("id")int id);
+
+    @Results({
+            @Result(column = "f_id",property = "id"),
+            @Result(column ="building",property = "buildName"),
+            @Result(column = "seat_count",property = "capacity"),
+            @Result(column = "status",property = "status")
+    })
+    @Update("update meeting_rooms set status=#{status} where f_id=#{id}")
+    int updateRoomStatus(@Param("id")int id,@Param("status")String status);
 }
