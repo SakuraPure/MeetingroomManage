@@ -10,10 +10,10 @@ import java.util.List;
 @Component
 public class ResultBeanDAO {
 
-    public <T> JSONObject roomSelectResult(List<T> selectResult, int code, String message, String type) {
+    public <T> JSONObject roomSelectResult(List<T> selectResult, int code, String message, String type,int total) {
         JSONObject result = new JSONObject();
-        result.put("item", selectResult);
-        result.put("total", selectResult.size());
+        result.put("items", selectResult);
+        result.put("total", total);
 
         JSONObject reponseObject = new JSONObject();
         reponseObject.put("code", code);

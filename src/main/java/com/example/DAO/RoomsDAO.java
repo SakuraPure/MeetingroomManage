@@ -15,18 +15,27 @@ public interface RoomsDAO {
     })
     @Select("<script> SELECT * FROM meeting_rooms "+
             "<choose>\n" +
-            "  <when test=\"page!= -1 and pageSize != 0\">\n" +
-            "    limit #{page},#{pageSize}\n" +
-            "  </when>\n" +
             "  <when test=\"id!= null\">\n" +
             "     WHERE f_id=#{id}\n" +
             "  </when>\n" +
             "  <when test=\"name!=null\">\n"+
             "     WHERE building=#{name}\n"+
             "  </when>\n"+
+            "  <when test=\"page!= -1 and pageSize != 0\">\n" +
+            "    limit #{page},#{pageSize}\n" +
+            "  </when>\n" +
             " </choose>"+
             "</script>")
     List<MeetingRooms> getRoomsAll(@Param("page")int page,@Param("pageSize")int pageSize,@Param("id")Integer id,@Param("name")String name);
+
+    @Results({
+            @Result(column = "f_id",property = "id"),
+            @Result(column ="building",property = "buildName"),
+            @Result(column = "seat_count",property = "capacity"),
+            @Result(column = "status",property = "status")
+    })
+    @Select("select * from meeting_rooms")
+    List<MeetingRooms> getRoomsAll2();
 
     @Results({
             @Result(column = "f_id",property = "id"),

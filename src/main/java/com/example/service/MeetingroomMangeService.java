@@ -6,6 +6,7 @@ import com.example.DAO.ResultBeanDAO;
 import com.example.DAO.RoomsDAO;
 import com.example.model.MeetingRooms;
 import com.example.model.ResultBean;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -27,20 +28,34 @@ public class MeetingroomMangeService {
 //        System.out.println(page+" "+pageSize);
 
         List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(page-1,pageSize,null,null);
+        List<MeetingRooms> count=roomsDAO.getRoomsAll2();
 //        System.out.println(meetingRoomsList);
-        return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success");
+        return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success",count.size());
     }
 
-    public JSONObject getRoomById(int id){
-        List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(-1,0,id,null);
-//        System.out.println(meetingRoomsList);
-        return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success");
-    }
-
-    public JSONObject getRoomByName(String name){
-        List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(-1,0,null,name);
-//        System.out.println(meetingRoomsList);
-        return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success");
+    public JSONObject getRoom(int page,int pageSize,String queryMode,String value){
+        if(queryMode.equals("id")){
+            System.out.println(value+" "+value.getClass());
+            Integer id=Integer.parseInt(value);
+            System.out.println(value+" "+value.getClass());
+            List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(-1,0,id,null);
+            List<MeetingRooms> count=roomsDAO.getRoomsAll2();
+            if(meetingRoomsList.size()==0){
+                return resultBeanDAO.roomSelectResult(meetingRoomsList,1,"未搜索到","success",0);
+            }
+            else
+                return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success",count.size());
+        }
+        else if(queryMode.equals("buildName")){
+            List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(page,pageSize,null,value);
+            List<MeetingRooms> count=roomsDAO.getRoomsAll2();
+            if(meetingRoomsList.size()==0){
+                return resultBeanDAO.roomSelectResult(meetingRoomsList,1,"未搜索到","success",0);
+            }
+            else
+                return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success",count.size());
+        }
+        return null;
     }
 
     public Object addRoom(String buildName,int floor,double area,int capacity){

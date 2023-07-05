@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.example.model.MeetingRooms;
 import com.example.model.ResultBean;
 import com.example.service.MeetingroomMangeService;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,14 +23,9 @@ public class MeetingroomMangeController {
         return meetingroomMangeService.getRoomAll(page,pageSize);
     }
 
-    @GetMapping("/api/meetingroomMange/getRoomById")
-    public JSONObject  getRoomById(int id){
-        return meetingroomMangeService.getRoomById(id);
-    }
-
-    @GetMapping("/api/meetingroomMange/getRoomByName")
-    public JSONObject  getRoomByName(String name){
-        return meetingroomMangeService.getRoomByName(name);
+    @GetMapping("/api/meetingroomMange/getRoom")
+    public <T> JSONObject getRoom(int page,int pageSize,String queryMode,@RequestParam("value")String value){
+            return meetingroomMangeService.getRoom(page,pageSize,queryMode,value);
     }
 
     @PostMapping("/api/meetingroomMange/addRoom")
