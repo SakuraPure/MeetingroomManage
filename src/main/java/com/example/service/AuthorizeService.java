@@ -102,19 +102,23 @@ public class AuthorizeService {
             Account account1 = new Account(username,password);
             userDAO.insertUserBase(account1);
             account1=userDAO.getUserByUsername(username);
-            JSONArray resultAaary = new JSONArray();
+            JSONArray rolesArray = new JSONArray();
+            JSONObject roleObject = new JSONObject();
+            roleObject.put("roleName","");
+            roleObject.put("value",account1.getRole());
+            rolesArray.add(roleObject);
+
             JSONObject resultObject = new JSONObject();
-            resultObject.put("roles","user");
-            resultObject.put("userId",String.valueOf(account1.getId()));
+            resultObject.put("roles",rolesArray);
+            resultObject.put("userId",account1.getId());
             resultObject.put("username",account1.getUsername());
             resultObject.put("token",account1.getId());
             resultObject.put("realName","");
             resultObject.put("desc","");
-            resultAaary.add(resultObject);
 
             JSONObject responseObject = new JSONObject();
             responseObject.put("code",0);
-            responseObject.put("result",resultAaary);
+            responseObject.put("result",resultObject);
             responseObject.put("message","ok");
             responseObject.put("type","success");
             return responseObject;

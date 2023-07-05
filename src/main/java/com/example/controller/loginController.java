@@ -4,6 +4,7 @@ import com.example.service.AuthorizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 
@@ -19,9 +20,10 @@ public class loginController {
         return authorizeService.login((String)requestData.get("username"), (String)requestData.get("password"));
     }
 
-    @PostMapping("/api/getInfo")
-    public Object getInfo(@RequestBody Map<String, Object> requestData) {
-        return authorizeService.getInfo((int)requestData.get("token"));
+    @GetMapping("/api/getUserInfo")
+    public Object getInfo(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        return authorizeService.getInfo(Integer.parseInt(token));
     }
 }
 

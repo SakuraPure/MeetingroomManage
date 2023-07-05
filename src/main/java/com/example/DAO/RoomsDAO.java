@@ -38,4 +38,22 @@ public interface RoomsDAO {
     })
     @Update("update meeting_rooms set building=#{buildName},floor=#{floor},seat_count=#{capacity},area=#{area} where f_id=#{id}")
     int updateRoom(MeetingRooms meetingRooms);
+
+    @Results({
+            @Result(column = "f_id",property = "id"),
+            @Result(column ="building",property = "buildName"),
+            @Result(column = "seat_count",property = "capacity"),
+            @Result(column = "status",property = "status")
+    })
+    @Insert("insert into meeting_rooms(building,floor,seat_count,area) values(#{buildName},#{floor},#{capacity},#{area})")
+    int insertRoom(MeetingRooms meetingRooms);
+
+    @Results({
+            @Result(column = "f_id",property = "id"),
+            @Result(column ="building",property = "buildName"),
+            @Result(column = "seat_count",property = "capacity"),
+            @Result(column = "status",property = "status")
+    })
+    @Delete("delete from meeting_rooms where f_id=#{id}")
+    int deleteRoom(int id);
 }

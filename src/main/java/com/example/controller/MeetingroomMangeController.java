@@ -28,4 +28,11 @@ public class MeetingroomMangeController {
     public List<MeetingRooms> getRoomByName(String name){
         return meetingroomMangeService.getRoomByName(name);
     }
+
+    @PostMapping("/api/meetingroomMange/addRoom")
+    public Object addRoom(@RequestBody Map<String, Object> requestData) {
+        double area = (double)requestData.get("area");
+        System.out.println((String)requestData.get("buildName")+" "+(int)requestData.get("floor")+" "+(double)requestData.get("area")+" "+(int)requestData.get("capacity"));
+        return meetingroomMangeService.addRoom((String)requestData.get("buildName"), (int)requestData.get("floor"),area,(int)requestData.get("capacity"));
+    }
 }

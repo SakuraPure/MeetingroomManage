@@ -32,5 +32,17 @@ public class MeetingroomMangeService {
         return meetingRoomsList;
     }
 
-
+    public boolean addRoom(String buildName,int floor,double area,int capacity){
+        MeetingRooms meetingRooms=new MeetingRooms().setBuildName(buildName)
+                                                    .setFloor(floor)
+                                                    .setArea(area)
+                                                    .setCapacity(capacity);
+        int result=roomsDAO.insertRoom(meetingRooms);
+        if(result==1) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }
