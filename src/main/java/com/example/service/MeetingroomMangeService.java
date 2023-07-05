@@ -1,5 +1,7 @@
 package com.example.service;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.example.DAO.ResultBeanDAO;
 import com.example.DAO.RoomsDAO;
 import com.example.model.MeetingRooms;
@@ -21,27 +23,24 @@ public class MeetingroomMangeService {
     @Resource
     ResultBeanDAO resultBeanDAO;
 
-    public ResultBean getRoomAll(int page,int pageSize){
+    public JSONObject getRoomAll(int page,int pageSize){
 //        System.out.println(page+" "+pageSize);
 
         List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(page-1,pageSize,null,null);
 //        System.out.println(meetingRoomsList);
-        resultBean = resultBeanDAO.reponseResultBean(meetingRoomsList,0,"success","success");
-        return resultBean;
+        return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success");
     }
 
-    public ResultBean getRoomById(int id){
+    public JSONObject getRoomById(int id){
         List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(-1,0,id,null);
 //        System.out.println(meetingRoomsList);
-        resultBean = resultBeanDAO.reponseResultBean(meetingRoomsList,0,"success","success");
-        return resultBean;
+        return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success");
     }
 
-    public ResultBean getRoomByName(String name){
+    public JSONObject getRoomByName(String name){
         List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(-1,0,null,name);
 //        System.out.println(meetingRoomsList);
-        resultBean = resultBeanDAO.reponseResultBean(meetingRoomsList,0,"success","success");
-        return resultBean;
+        return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success");
     }
 
     public Object addRoom(String buildName,int floor,double area,int capacity){

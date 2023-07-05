@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.example.model.MeetingRooms;
 import com.example.model.ResultBean;
 import com.example.service.MeetingroomMangeService;
@@ -17,17 +18,17 @@ public class MeetingroomMangeController {
 
 
     @GetMapping("/api/meetingroomMange/getRoomAll")
-    public ResultBean getRoomAll(int page,int pageSize){
+    public JSONObject getRoomAll(int page, int pageSize){
         return meetingroomMangeService.getRoomAll(page,pageSize);
     }
 
     @GetMapping("/api/meetingroomMange/getRoomById")
-    public ResultBean getRoomById(int id){
+    public JSONObject  getRoomById(int id){
         return meetingroomMangeService.getRoomById(id);
     }
 
     @GetMapping("/api/meetingroomMange/getRoomByName")
-    public ResultBean getRoomByName(String name){
+    public JSONObject  getRoomByName(String name){
         return meetingroomMangeService.getRoomByName(name);
     }
 
