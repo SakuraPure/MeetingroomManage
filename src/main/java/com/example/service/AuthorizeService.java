@@ -127,7 +127,7 @@ public class AuthorizeService {
         if(account!=null){
             JSONArray rolesArray = new JSONArray();
             JSONObject roleObject = new JSONObject();
-            roleObject.put("roleName", "");
+//            roleObject.put("roleName", "");
             roleObject.put("value", account.getRole());
             rolesArray.add(roleObject);
 
