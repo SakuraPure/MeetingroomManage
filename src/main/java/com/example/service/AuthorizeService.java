@@ -58,7 +58,7 @@ public class AuthorizeService {
             resultObject.put("roles", rolesArray);
             resultObject.put("userId", account.getId());
             resultObject.put("username", account.getUsername());
-            resultObject.put("token", "fakeToken");
+            resultObject.put("token", account.getId());
             resultObject.put("realName", "");
             resultObject.put("desc", "");
 
@@ -70,14 +70,6 @@ public class AuthorizeService {
             return responseObject;
         }
         return null;
-    }
-    public JSONObject logout() {
-        JSONObject responseObject = new JSONObject();
-        responseObject.put("code", 0);
-        responseObject.put("result", "");
-        responseObject.put("message", "ok");
-        responseObject.put("type", "success");
-        return responseObject;
     }
 
     public JSONObject register(String username,String password){
@@ -115,7 +107,7 @@ public class AuthorizeService {
             resultObject.put("roles","user");
             resultObject.put("userId",String.valueOf(account1.getId()));
             resultObject.put("username",account1.getUsername());
-            resultObject.put("token","fakeToken");
+            resultObject.put("token",account1.getId());
             resultObject.put("realName","");
             resultObject.put("desc","");
             resultAaary.add(resultObject);
@@ -125,6 +117,34 @@ public class AuthorizeService {
             responseObject.put("result",resultAaary);
             responseObject.put("message","ok");
             responseObject.put("type","success");
+            return responseObject;
+        }
+        return null;
+    }
+
+    public JSONObject getInfo(int token){
+        Account account = userDAO.getUserById(token);
+        if(account!=null){
+            JSONArray rolesArray = new JSONArray();
+            JSONObject roleObject = new JSONObject();
+            roleObject.put("roleName", "");
+            roleObject.put("value", account.getRole());
+            rolesArray.add(roleObject);
+
+            JSONObject resultObject = new JSONObject();
+            resultObject.put("userId", account.getId());
+            resultObject.put("username", account.getUsername());
+            resultObject.put("password", account.getPassword());
+            resultObject.put("token", account.getId());
+//            resultObject.put("realName", "");
+//            resultObject.put("desc", "");
+            resultObject.put("roles", rolesArray);
+
+            JSONObject responseObject = new JSONObject();
+            responseObject.put("code", 0);
+            responseObject.put("result", resultObject);
+            responseObject.put("message", "ok");
+            responseObject.put("type", "success");
             return responseObject;
         }
         return null;

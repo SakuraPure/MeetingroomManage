@@ -12,4 +12,8 @@ public interface UserDAO {
     Account getUserByUsername(String username);
     @Insert("insert into users(username,password,role) values(#{username},#{password},#{role})")
     int insertUserBase(Account account);
+
+    @Result(column = "f_id",property = "id")
+    @Select("select * from users where f_id=#{id}")
+    Account getUserById(int id);
 }
