@@ -41,7 +41,7 @@ public class MeetingroomMangeService {
             List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(-1,0,id,null);
             List<MeetingRooms> count=roomsDAO.getRoomsAll2();
             if(meetingRoomsList.size()==0){
-                return resultBeanDAO.roomSelectResult(meetingRoomsList,1,"未搜索到","success",0);
+                return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"未搜索到","success",0);
             }
             else
                 return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success",count.size());
@@ -50,7 +50,7 @@ public class MeetingroomMangeService {
             List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(page,pageSize,null,value);
             List<MeetingRooms> count=roomsDAO.getRoomsAll2();
             if(meetingRoomsList.size()==0){
-                return resultBeanDAO.roomSelectResult(meetingRoomsList,1,"未搜索到","success",0);
+                return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"未搜索到","success",0);
             }
             else
                 return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success",count.size());
@@ -58,18 +58,30 @@ public class MeetingroomMangeService {
         return null;
     }
 
-    public Object addRoom(String buildName,int floor,double area,int capacity){
-        MeetingRooms meetingRooms=new MeetingRooms().setBuildName(buildName)
-                                                    .setFloor(floor)
-                                                    .setArea(area)
-                                                    .setCapacity(capacity);
-        int result=roomsDAO.insertRoom(meetingRooms);
-        if(result==1) {
-            return true;
+    public Object addRoom(Integer id,String buildName,int floor,double area,int capacity){
+        MeetingRooms meetingRooms;
+        JSONObject jsonObject=new JSONObject();
+        int result=0;
+        if(id!=null){
+            meetingRooms=new MeetingRooms().setBuildName(buildName)
+                    .setFloor(floor)
+                    .setArea(area)
+                    .setCapacity(capacity)
+                    .setId(id);
+            result= roomsDAO.insertRoom(meetingRooms);
+        } else if (id==null) {
+            meetingRooms=new MeetingRooms().setBuildName(buildName)
+                    .setFloor(floor)
+                    .setArea(area)
+                    .setCapacity(capacity);
+            result = roomsDAO.insertRoomNoID(meetingRooms);
         }
-        else {
-            return false;
+        if(result!=0){
+            jsonObject.put("code",0);
+            jsonObject.put("message","success");
+
         }
+        return jsonObject;
     }
 
     public Object deleteRoom(int id){
@@ -77,12 +89,13 @@ public class MeetingroomMangeService {
         return null;
     }
 
-    public Object updateRoom(int id,String buildName,int floor,double area,int capacity){
+    public Object updateRoom(int oid,int id,String buildName,int floor,double area,int capacity){
         MeetingRooms meetingRooms=new MeetingRooms().setBuildName(buildName)
                 .setFloor(floor)
                 .setArea(area)
-                .setCapacity(capacity);
-        roomsDAO.updateRoom(id,meetingRooms);
+                .setCapacity(capacity)
+                .setId(id);
+        roomsDAO.updateRoom(oid,meetingRooms);
         return null;
     }
 

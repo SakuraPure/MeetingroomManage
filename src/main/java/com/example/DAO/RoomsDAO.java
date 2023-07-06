@@ -43,8 +43,22 @@ public interface RoomsDAO {
             @Result(column = "seat_count",property = "capacity"),
             @Result(column = "status",property = "status")
     })
-    @Update("update meeting_rooms set building=#{buildName},floor=#{floor},seat_count=#{capacity},area=#{area} where f_id=#{id}")
-    int updateRoom(@Param("id")int id,MeetingRooms meetingRooms);
+    @Update("<script>update meeting_rooms set "+
+            "<if test=\"id!=0\">"+
+            "f_id=#{id} " +
+            "</if>"+
+            "building=#{buildName},floor=#{floor},seat_count=#{capacity},area=#{area} where f_id=#{oid}"+
+            "</script>")
+    int updateRoom(@Param("oid")int oid,MeetingRooms meetingRooms);
+
+    @Results({
+            @Result(column = "f_id",property = "id"),
+            @Result(column ="building",property = "buildName"),
+            @Result(column = "seat_count",property = "capacity"),
+            @Result(column = "status",property = "status")
+    })
+    @Insert("insert into meeting_rooms(f_id,building,floor,seat_count,area) values(#{id},#{buildName},#{floor},#{capacity},#{area})")
+    int insertRoom(MeetingRooms meetingRooms);
 
     @Results({
             @Result(column = "f_id",property = "id"),
@@ -53,7 +67,7 @@ public interface RoomsDAO {
             @Result(column = "status",property = "status")
     })
     @Insert("insert into meeting_rooms(building,floor,seat_count,area) values(#{buildName},#{floor},#{capacity},#{area})")
-    int insertRoom(MeetingRooms meetingRooms);
+    int insertRoomNoID(MeetingRooms meetingRooms);
 
     @Results({
             @Result(column = "f_id",property = "id"),
