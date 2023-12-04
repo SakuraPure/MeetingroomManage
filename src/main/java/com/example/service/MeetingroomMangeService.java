@@ -2,14 +2,19 @@ package com.example.service;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import com.example.DAO.ApprovalsDAO;
+import com.example.DAO.ReserveDAO;
 import com.example.DAO.ResultBeanDAO;
 import com.example.DAO.RoomsDAO;
+import com.example.model.MeetingApprovals;
+import com.example.model.MeetingReservations;
 import com.example.model.MeetingRooms;
 import com.example.model.ResultBean;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,10 +29,23 @@ public class MeetingroomMangeService {
     @Resource
     ResultBeanDAO resultBeanDAO;
 
+    @Resource
+    ReserveDAO reserveDAO;
+
+    @Resource
+    ApprovalsDAO approvalsDAO;
+
     public JSONObject getRoomAll(int page,int pageSize){
 //        System.out.println(page+" "+pageSize);
-
-        List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(page-1,pageSize,null,null);
+        if(page==1)
+            page=0;
+        else if (page>1) {
+            int temp=page;
+            page=(page-1)*pageSize;
+            pageSize=temp*pageSize;
+        }
+        System.out.println(page+" "+pageSize);
+        List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(page,pageSize,null,null);
         List<MeetingRooms> count=roomsDAO.getRoomsAll2();
 //        System.out.println(meetingRoomsList);
         return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success",count.size());
@@ -47,6 +65,13 @@ public class MeetingroomMangeService {
                 return resultBeanDAO.roomSelectResult(meetingRoomsList,0,"success","success",count.size());
         }
         else if(queryMode.equals("buildName")){
+            if(page==1)
+                page=0;
+            else if (page>1) {
+                int temp=page;
+                page=(page-1)*pageSize;
+                pageSize=temp*pageSize;
+            }
             List<MeetingRooms> meetingRoomsList=roomsDAO.getRoomsAll(page,pageSize,null,value);
             List<MeetingRooms> count=roomsDAO.getRoomsAll2();
             if(meetingRoomsList.size()==0){
@@ -63,6 +88,11 @@ public class MeetingroomMangeService {
         JSONObject jsonObject=new JSONObject();
         int result=0;
         if(id!=null){
+            if(roomsDAO.getRoomsAll(-1,0,id,null)!=null){
+                jsonObject.put("code",1);
+                jsonObject.put("message","id已存在");
+                return jsonObject;
+            }
             meetingRooms=new MeetingRooms().setBuildName(buildName)
                     .setFloor(floor)
                     .setArea(area)
@@ -84,20 +114,74 @@ public class MeetingroomMangeService {
         return jsonObject;
     }
 
-    public Object deleteRoom(int id){
+    public JSONObject deleteRoom(int id){
         int result=roomsDAO.deleteRoom(id);
-        return null;
+        JSONObject jsonObject=new JSONObject();
+        if(result!=0){
+            jsonObject.put("code",0);
+            jsonObject.put("message","success");
+        }
+        else{
+            jsonObject.put("code",1);
+            jsonObject.put("message","删除失败");
+        }
+        return jsonObject;
     }
 
-    public Object updateRoom(int oid,int id,String buildName,int floor,double area,int capacity){
-        MeetingRooms meetingRooms=new MeetingRooms().setBuildName(buildName)
-                .setFloor(floor)
-                .setArea(area)
-                .setCapacity(capacity)
-                .setId(id);
-        roomsDAO.updateRoom(oid,meetingRooms);
-        return null;
+    public JSONObject updateRoom(int oid,Integer id,String buildName,int floor,double area,int capacity){
+        if(id==null)id=oid;
+        if(id!=oid&&roomsDAO.getRoomsAll(-1,0,id,null)!=null){
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("code",1);
+            jsonObject.put("message","id已存在");
+            return jsonObject;
+        }
+//        MeetingRooms meetingRooms=new MeetingRooms().setBuildName(buildName)
+//                .setFloor(floor)
+//                .setArea(area)
+//                .setCapacity(capacity)
+//                .setId(id);
+        roomsDAO.updateRoom(oid,id,buildName,floor,capacity,area);
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("code",0);
+        jsonObject.put("message","success");
+        return jsonObject;
     }
 
-
+    public JSONObject reserveRoom(int tokenId, String topic, int roomId, LocalDateTime start,LocalDateTime end){
+        MeetingReservations meetingReservations=new MeetingReservations().setUserId(tokenId)
+                .setMeetingTopic(topic)
+                .setRoomId(roomId)
+                .setStartTime(start.withNano(0))
+                .setEndTime(end.withNano(0));
+        if(reserveDAO.countStart(meetingReservations.getStartTime())!=0){
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("code",1);
+            jsonObject.put("message","预定失败，该时间段已被预定");
+            return jsonObject;
+        } else if (reserveDAO.countEnd(meetingReservations.getEndTime())!=0) {
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("code",1);
+            jsonObject.put("message","预定失败，该时间段已被预定");
+            return jsonObject;
+        }
+        int result=reserveDAO.insertReserve(meetingReservations);
+        int reserveId=reserveDAO.getReserveByAll(meetingReservations).getId();
+        System.out.println(reserveId);
+        MeetingApprovals meetingApprovals=new MeetingApprovals().setReservationId(reserveId)
+                .setApproverId(1)
+                .setStatus("reviewing");
+        int result2=approvalsDAO.insertApprovals(meetingApprovals);
+        roomsDAO.updateRoomStatus(roomId,"reviewing");
+        JSONObject resultJSON=new JSONObject();
+        if(result!=0&&result2!=0){
+            resultJSON.put("code",0);
+            resultJSON.put("message","success");
+        }
+        else{
+            resultJSON.put("code",1);
+            resultJSON.put("message","fail");
+        }
+        return resultJSON;
+    }
 }

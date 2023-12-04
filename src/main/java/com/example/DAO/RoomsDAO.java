@@ -45,11 +45,11 @@ public interface RoomsDAO {
     })
     @Update("<script>update meeting_rooms set "+
             "<if test=\"id!=0\">"+
-            "f_id=#{id} " +
+            "f_id=#{id}, " +
             "</if>"+
             "building=#{buildName},floor=#{floor},seat_count=#{capacity},area=#{area} where f_id=#{oid}"+
             "</script>")
-    int updateRoom(@Param("oid")int oid,MeetingRooms meetingRooms);
+    int updateRoom(@Param("oid")int oid,@Param("id")int id,@Param("buildName")String buildName,@Param("floor")int floor,@Param("capacity")int capacity,@Param("area")double area);
 
     @Results({
             @Result(column = "f_id",property = "id"),
@@ -86,4 +86,5 @@ public interface RoomsDAO {
     })
     @Update("update meeting_rooms set status=#{status} where f_id=#{id}")
     int updateRoomStatus(@Param("id")int id,@Param("status")String status);
+
 }

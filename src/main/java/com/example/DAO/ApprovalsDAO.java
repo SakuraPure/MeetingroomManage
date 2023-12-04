@@ -11,9 +11,9 @@ public interface ApprovalsDAO {
             @Result(column = "reservation_id",property = "reservationId"),
             @Result(column = "approver_id",property = "approverId"),
             @Result(column = "status",property = "status"),
-            @Result(column = "comment",property = "comment"),
+            @Result(column = "comments",property = "comment"),
     })
-    @Insert("insert into meeting_approvals(reservation_id,approver_id,status,comment) values(#{reservationId},#{approverId},#{status},#{comment})")
+    @Insert("insert into meeting_approvals(reservation_id,approver_id,status,comments) values(#{reservationId},#{approverId},#{status},#{comment})")
     int insertApprovals(MeetingApprovals meetingApprovals);
 
     @Results({
@@ -21,8 +21,18 @@ public interface ApprovalsDAO {
             @Result(column = "reservation_id",property = "reservationId"),
             @Result(column = "approver_id",property = "approverId"),
             @Result(column = "status",property = "status"),
-            @Result(column = "comment",property = "comment"),
+            @Result(column = "comments",property = "comment"),
     })
     @Select("select * from meeting_approvals where reservation_id=#{reservationId}")
     MeetingApprovals getApprovalsByReservationId(@Param("reservationId")int reservationId);
+
+    @Results({
+            @Result(column = "f_id",property = "id"),
+            @Result(column = "reservation_id",property = "reservationId"),
+            @Result(column = "approver_id",property = "approverId"),
+            @Result(column = "status",property = "status"),
+            @Result(column = "comments",property = "comment"),
+    })
+    @Delete("delete from meeting_approvals where reservation_id=#{reservationId}")
+    int deleteApprovalsByReservationId(@Param("reservationId")int reservationId);
 }
